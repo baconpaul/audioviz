@@ -146,10 +146,19 @@ struct LaserBeam : audioviz::Screen
 
         text.setFont(theFont);
         text.setString("Leeward Visualization");
-        text.setCharacterSize(30);
-        text.setFillColor(sf::Color::White);
-        text.setPosition(400 + 50 * std::sin(ang), 0);
+        text.setCharacterSize(50);
+
+        auto b = text.getLocalBounds();
+        auto cp = (target.getSize().x - b.getSize().x) * 0.5;
+
+
+        text.setFillColor(sf::Color::Red);
+        text.setPosition(cp + 3 + 50 * std::sin(ang), 3);
         target.draw(text, states);
+        text.setFillColor(sf::Color::White);
+        text.setPosition(cp + 50 * std::sin(ang), 0);
+        target.draw(text, states);
+
     }
 };
 
