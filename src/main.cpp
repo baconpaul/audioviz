@@ -1,5 +1,13 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <string>
+#include <memory>
+#include <cstdint>
+
+#include "cmrc/cmrc.hpp"
+
+CMRC_DECLARE(audioviz_resources);
+
 
 #define GLOG(...) std::cout << __FILE__ << ":" << __LINE__ << " [" << __func__ << "] " << __VA_ARGS__ << std::endl;
 
@@ -28,6 +36,22 @@ struct LaserBeam : sf::Drawable
 
 };
 
+std::vector<uint8_t> getResource(const std::string &path)
+{
+    try
+    {
+        auto fs = cmrc::audioviz_resources::get_filesystem();
+        auto df = fs.open(path);
+        std::vector<uint8_t> dat(df.begin(), df.end());
+        return dat;
+    }
+    catch (std::exception &e)
+    {
+    }
+    GLOG("Resource '" << path << "' failed to load");
+    return {};
+}
+
 int main()
 {
     sf::ContextSettings settings;
@@ -37,11 +61,16 @@ int main()
     window.setFramerateLimit(144);
 
     sf::Texture texture;
-    if (!texture.loadFromFile("res/PirateSessions.png"))
+    auto ps = getResource("PirateSessions.png");
+    if (ps.empty())
+    {
+        GLOG("Failed to acquire resource");
+        return 2;
+    }
+    if (!texture.loadFromMemory((void *)&ps[0], ps.size()))
     {
         GLOG("Failed to load texture");
-        return 2;
-
+        return 4;
     }
     GLOG("Texture loaded " << texture.getSize().x << " " << texture.getSize().y);
 

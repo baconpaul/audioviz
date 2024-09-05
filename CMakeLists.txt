@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(sfml_test LANGUAGES CXX)
+project(audioviz LANGUAGES CXX)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
@@ -11,14 +11,23 @@ FetchContent_Declare(SFML
     GIT_TAG 2.6.x)
 FetchContent_MakeAvailable(SFML)
 
-add_executable(main src/main.cpp)
-target_link_libraries(main PRIVATE sfml-graphics)
-target_compile_features(main PRIVATE cxx_std_17)
+include("cmake/CmakeRC.cmake")
 
-if(WIN32)
-    add_custom_command(
-        TARGET main
-        COMMENT "Copy OpenAL DLL"
-        PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${SFML_SOURCE_DIR}/extlibs/bin/$<IF:$<EQUAL:${CMAKE_SIZEOF_VOID_P},8>,x64,x86>/openal32.dll $<TARGET_FILE_DIR:main>
-        VERBATIM)
+add_subdirectory(res)
+
+add_executable(${PROJECT_NAME} src/main.cpp)
+target_link_libraries(${PROJECT_NAME} PRIVATE sfml-graphics ${PROJECT_NAME}-resources)
+target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
+
+if (APPLE)
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        MACOSX_BUNDLE TRUE
+    )
+    target_link_options(${PROJECT_NAME} PUBLIC  "-Wl,-rpath,@executable_path/../Frameworks")
+    set(FWD "$<TARGET_PROPERTY:${PROJECT_NAME},RUNTIME_OUTPUT_DIRECTORY>")
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND mkdir -p ${FWD}/${PROJECT_NAME}.app/Contents/Frameworks
+            COMMAND  cp -a ${CMAKE_BINARY_DIR}/_deps/sfml-src/extlibs/libs-osx/Frameworks/* ${FWD}/${PROJECT_NAME}.app/Contents/Frameworks
+            USES_TERMINAL
+    )
 endif()
