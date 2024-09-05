@@ -16,22 +16,44 @@ struct LaserBeam : sf::Drawable
     static constexpr int nPoints{100};
     LaserBeam() : m_vertices(sf::Points, nPoints) {
         for (int i=0; i<nPoints; ++i)
-            m_vertices[i].position = sf::Vector2f{ 1000.f * rand() / RAND_MAX, 800.f * rand() / RAND_MAX};
+        {
+            m_vertices[i].position = sf::Vector2f{ 500, 350 };
+            m_angles[i] = sf::Vector2f( 4.0 * rand() / RAND_MAX - 2.0, 4.0 * rand() / RAND_MAX - 2.0);
+        }
     }
 
     sf::VertexArray m_vertices;
+    sf::Vector2f  m_angles[nPoints];
     void step()
     {
         for (int i=0; i<nPoints; ++i)
-            m_vertices[i].position += sf::Vector2f{ 4.f * rand() / RAND_MAX-2, 4.f * rand() / RAND_MAX-2};
+        {
+            m_vertices[i].position += m_angles[i];
+            if (m_vertices[i].position.x < 10 || m_vertices[i].position.x > 1000 ||
+                m_vertices[i].position.y < 10 || m_vertices[i].position.y > 700)
+            {
+                m_vertices[i].position = sf::Vector2f{ 500, 350 };
+                m_angles[i] = sf::Vector2f( 4.0 * rand() / RAND_MAX - 2.0, 4.0 * rand() / RAND_MAX - 2.0);
+            }
+        }
     }
     void draw(sf::RenderTarget& target, sf::RenderStates states) const override
     {
         // our particles don't use a texture
         states.texture = nullptr;
 
-        // draw the vertex array
-        target.draw(m_vertices, states);
+        sf::CircleShape shape(3.f);
+
+        for (int i=0; i<nPoints; ++i)
+        {
+            auto x = m_vertices[i].position.x;
+            auto y = m_vertices[i].position.y;
+            // set the shape color to green
+            shape.setFillColor(sf::Color(190, 190, 240));
+            shape.setPosition(x, y);
+            // draw the vertex array
+            target.draw(shape, states);
+        }
     }
 
 };
@@ -57,7 +79,7 @@ int main()
     sf::ContextSettings settings;
     settings.antialiasingLevel = 8;
 
-    auto window = sf::RenderWindow{{1920u, 1080u}, "Pauls test", sf::Style::Default, settings};
+    auto window = sf::RenderWindow{{1024u, 768u}, "Audi Viz", sf::Style::Default, settings};
     window.setFramerateLimit(144);
 
     sf::Texture texture;
@@ -94,12 +116,14 @@ int main()
 
         // set the shape color to green
         shape.setFillColor(sf::Color(100, 250, 50));
-        auto x = std::sin(ang) * 200 + 300;
-        auto y = std::cos(ang) * 200 + 300;
+        auto x = std::sin(ang) * 200 + 200;
+        auto y = std::cos(ang) * 200 + 200;
         shape.setPosition(x, y);
         ang += 0.01;
         window.draw(shape);
 
+        x = std::sin(ang * 1.3) * 130 + 200;
+        y = std::cos(ang * -0.9) * 180 + 190;
         sprite.setPosition(x + 100, y + 100);
         window.draw(sprite);
         window.draw(lb);
@@ -108,8 +132,8 @@ int main()
 
         // define the position of the triangle's points
         triangle[0].position = sf::Vector2f(10.f, 10.f);
-        triangle[1].position = sf::Vector2f(100.f, 10.f);
-        triangle[2].position = sf::Vector2f(100.f, 100.f);
+        triangle[1].position = sf::Vector2f(200.f, 10.f);
+        triangle[2].position = sf::Vector2f(200.f, 320.f);
 
         // define the color of the triangle's points
         triangle[0].color = sf::Color::White;
