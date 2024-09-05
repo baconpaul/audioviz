@@ -55,6 +55,7 @@ int main()
     while (window.isOpen())
     {
         auto &cs = ms.currentScreen();
+        bool returnToMainAtEnd{false};
         for (auto event = sf::Event{}; window.pollEvent(event);)
         {
             switch (event.type)
@@ -66,7 +67,14 @@ int main()
             {
                 char str[5]{0, 0, 0, 0};
                 utf32_to_utf8_string(event.text.unicode, str);
-                cs->textEntered(str);
+                if (str[0] == 'Q' || str[0] == 'q')
+                {
+                    returnToMainAtEnd = true;
+                }
+                else
+                {
+                    cs->textEntered(str);
+                }
             }
             break;
             case sf::Event::MouseButtonPressed:
@@ -82,5 +90,8 @@ int main()
         window.draw(*cs);
         window.display();
         cs->step();
+
+        if (returnToMainAtEnd)
+            ms.returnToMainMenu();
     }
 }

@@ -25,9 +25,11 @@ namespace audioviz
 {
 struct MainScreenProvider : infra::ScreenProvider
 {
+    std::string cs{};
     std::unordered_map<std::string, std::unique_ptr<infra::Screen>> screens;
     MainScreenProvider();
     const std::unique_ptr<infra::Screen> &currentScreen() const override;
+    void returnToMainMenu();
 };
 } // namespace audioviz
 
