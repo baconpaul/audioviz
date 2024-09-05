@@ -17,7 +17,10 @@ include("cmake/CmakeRC.cmake")
 
 add_subdirectory(res)
 
-add_executable(${PROJECT_NAME} src/main.cpp)
+add_executable(${PROJECT_NAME}
+        src/main.cpp
+        src/TextureSet.cpp
+)
 target_link_libraries(${PROJECT_NAME} PRIVATE sfml-graphics ${PROJECT_NAME}-resources)
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
 

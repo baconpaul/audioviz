@@ -2,6 +2,7 @@ project(audioviz-resources)
 
 cmrc_add_resource_library(${PROJECT_NAME}
         NAMESPACE audioviz_resources
-        "PirateSessions.png"
+        PirateSessions.png
+        BeamGradient.png
         )
 set_target_properties(${PROJECT_NAME} PROPERTIES UNITY_BUILD FALSE)
