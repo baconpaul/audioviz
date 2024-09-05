@@ -12,14 +12,20 @@
  * https://github.com/baconpaul/audioviz
  */
 
-#ifndef AUDIOVIZ_SRC_TEXTURESET_H
-#define AUDIOVIZ_SRC_TEXTURESET_H
+#ifndef AUDIOVIZ_SRC_SCREEN_H
+#define AUDIOVIZ_SRC_SCREEN_H
 
 #include <SFML/Graphics.hpp>
 
-namespace audioviz::texture
+namespace audioviz
 {
-bool load(const std::string &path, sf::Texture &into);
-}
+struct Screen : sf::Drawable
+{
+    virtual ~Screen() = default;
+    virtual void step() = 0;
+    virtual void mouseDown(int x, int y) {}
+    virtual void textEntered(const std::string &c) {}
+};
+} // namespace audioviz
 
-#endif // AUDIOVIZ_TEXTURESET_H
+#endif // AUDIOVIZ_SCREEN_H

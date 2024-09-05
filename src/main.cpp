@@ -1,73 +1,82 @@
+/*
+ * AudioViz - just baconpaul noodling on stuff
+ *
+ * Copyright 2024, Paul Walker. Released under the MIT license.
+ *
+ * The images in the 'res' folder may be copyrighted and released
+ * under restricted license. The code in scripts/ and src/ is all
+ * MIT. But really, nothing to see here. Just a collaboration on
+ * SFML for my current band
+ *
+ * All source for is available at
+ * https://github.com/baconpaul/audioviz
+ */
 #include <SFML/Graphics.hpp>
-#include <iostream>
-#include <string>
-#include <memory>
 #include <cstdint>
 
 #include "audioviz.h"
-#include "TextureSet.h"
 #include "LaserBeams.h"
 
+void utf32_to_utf8_string(uint32_t code, char *string)
+{
+    if (code < 0x80)
+        string[0] = code;
+    else if (code < 0x800)
+    { // 00000yyy yyxxxxxx
+        string[0] = (0b11000000 | (code >> 6));
+        string[1] = (0b10000000 | (code & 0x3f));
+    }
+    else if (code < 0x10000)
+    {                                                    // zzzzyyyy yyxxxxxx
+        string[0] = (0b11100000 | (code >> 12));         // 1110zzz
+        string[1] = (0b10000000 | ((code >> 6) & 0x3f)); // 10yyyyy
+        string[2] = (0b10000000 | (code & 0x3f));        // 10xxxxx
+    }
+    else if (code < 0x200000)
+    {                                                     // 000uuuuu zzzzyyyy yyxxxxxx
+        string[0] = (0b11110000 | (code >> 18));          // 11110uuu
+        string[1] = (0b10000000 | ((code >> 12) & 0x3f)); // 10uuzzzz
+        string[2] = (0b10000000 | ((code >> 6) & 0x3f));  // 10yyyyyy
+        string[3] = (0b10000000 | (code & 0x3f));         // 10xxxxxx
+    }
+}
 
 int main()
 {
     sf::ContextSettings settings;
-    settings.antialiasingLevel = 8;
+    settings.antialiasingLevel = 4;
 
     auto window = sf::RenderWindow{{1024u, 768u}, "Audi Viz", sf::Style::Default, settings};
     window.setFramerateLimit(144);
 
-    sf::Texture texture;
-    if (!audioviz::texture::load("PirateSessions.png", texture))
-    {
-        GLOG("Failed to load texture");
-        return 4;
-    }
-    GLOG("Texture loaded " << texture.getSize().x << " " << texture.getSize().y);
-
-    sf::Sprite sprite;
-    sprite.setTexture(texture);
     audioviz::graphics::LaserBeam lb;
-    float ang{0};
     while (window.isOpen())
     {
         for (auto event = sf::Event{}; window.pollEvent(event);)
         {
-            if (event.type == sf::Event::Closed)
+            switch (event.type)
             {
+            case sf::Event::Closed:
                 window.close();
+                break;
+            case sf::Event::TextEntered:
+            {
+                char str[5]{0, 0, 0, 0};
+                utf32_to_utf8_string(event.text.unicode, str);
+                lb.textEntered(str);
+            }
+            break;
+            case sf::Event::MouseButtonPressed:
+            {
+                lb.mouseDown(event.mouseButton.x, event.mouseButton.y);
+            }
+            default:
+                break;
             }
         }
 
         window.clear();
-
-
-        sf::VertexArray triangle(sf::Triangles, 3);
-
-        // define the position of the triangle's points
-        triangle[0].position = sf::Vector2f(10.f, 10.f);
-        triangle[1].position = sf::Vector2f(200.f, 10.f);
-        triangle[2].position = sf::Vector2f(200.f, 320.f);
-
-        // define the color of the triangle's points
-        triangle[0].color = sf::Color::White;
-        triangle[1].color = sf::Color::White;
-        triangle[2].color = sf::Color::White;
-
-        triangle[0].texCoords = sf::Vector2f(0.f, 0.f);
-        triangle[1].texCoords = sf::Vector2f(0.f, 400.f);
-        triangle[2].texCoords = sf::Vector2f(400.f, 200.f * std::sin(ang));
-        window.draw(triangle, &texture);
-
         window.draw(lb);
-
-        auto x = std::sin(ang * 1.3) * 130 + 200;
-        auto y = std::cos(ang * -0.9) * 180 + 190;
-        ang += 0.01;
-        sprite.setPosition(x + 100, y + 100);
-        sprite.setScale(0.3, 0.3);
-        window.draw(sprite);
-
         window.display();
         lb.step();
     }
