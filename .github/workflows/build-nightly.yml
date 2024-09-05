@@ -1,4 +1,4 @@
-name: Build DAW Plugin
+name: Build AudioViz
 on:
   push:
     branches:
@@ -48,8 +48,8 @@ jobs:
       - name: Build release version
         run: |
           
-          export MAC_SIGNING_CERT="${{ secrets.MAC_SIGNING_CERT_NAME }}"
-          export MAC_INSTALLING_CERT="${{ secrets.MAC_INSTALLING_CERT_NAME }}"
+          export MAC_SIGNING_CERT="${{ secrets.MAC_SIGNING_CERT }}"
+          export MAC_INSTALLING_CERT="${{ secrets.MAC_INSTALLING_CERT }}"
   
           export MAC_SIGNING_ID="${{ secrets.MAC_SIGNING_ID }}"
           export MAC_SIGNING_1UPW="${{ secrets.MAC_SIGNING_1UPW }}"
@@ -62,6 +62,7 @@ jobs:
       - name: Show Build Directory
         run: |
           ls -l ./build
+          ls -l ./build/dmg
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
