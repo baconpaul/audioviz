@@ -4,6 +4,9 @@ on:
     branches:
       - main
   workflow_dispatch:
+  pull_request:
+    branches:
+      - main
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -20,6 +23,7 @@ jobs:
       matrix:
         include:
           - os: macos-latest
+          - os: ubuntu-latest
 
     steps:
       - name: Checkout code
@@ -41,7 +45,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt install libasound2-dev libx11-dev libxcomposite-dev libxcursor-dev libxext-dev libxinerama-dev libxrandr-dev libxrender-dev libfreetype6-dev libglu1-mesa-dev libjack-jackd2-dev
+          sudo apt install libasound2-dev libx11-dev libudev-dev libxcomposite-dev libxcursor-dev libxext-dev libxinerama-dev libxrandr-dev libxrender-dev libfreetype6-dev libglu1-mesa-dev libjack-jackd2-dev
           sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 12
           sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 12
 
@@ -57,14 +61,15 @@ jobs:
   
           cmake -S . -B ./build -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" 
           cmake --build ./build --config Release --target audioviz --parallel 3
-          BUILD_DIR=./build ./scripts/make_dmg.sh
 
-      - name: Show Build Directory
-        run: |
-          ls -l ./build
+      - name: Make DMG
+        if: runner.os == 'macOS'
+        run :
+          BUILD_DIR=./build ./scripts/make_dmg.sh
           ls -l ./build/dmg
 
       - name: Upload artifact
+        if: runner.os == 'macOS'
         uses: actions/upload-artifact@v4
         with:
           path: build/dmg

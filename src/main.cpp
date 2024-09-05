@@ -49,6 +49,8 @@ int main()
     auto window = sf::RenderWindow{{1024u, 768u}, "Audi Viz", sf::Style::Default, settings};
     window.setFramerateLimit(144);
 
+    GLOG("Shaders available: " << sf::Shader::isAvailable());
+
     audioviz::graphics::LaserBeam lb;
     while (window.isOpen())
     {
