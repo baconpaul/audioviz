@@ -16,7 +16,7 @@
 #define AUDIOVIZ_SRC_LASERBEAMS_H
 
 #include <SFML/Graphics.hpp>
-#include "TextureSet.h"
+#include "resource_access.h"
 #include "audioviz.h"
 #include "screen.h"
 
@@ -35,12 +35,12 @@ struct LaserBeam : audioviz::Screen
             m_angles[i] =
                 sf::Vector2f(4.0 * rand() / RAND_MAX - 2.0, 4.0 * rand() / RAND_MAX - 2.0);
         }
-        if (!audioviz::texture::load("BeamGradient.png", beamGrad))
+        if (!audioviz::resource_access::load("BeamGradient.png", beamGrad))
         {
             GLOG("Failed to load beam gradient");
         }
 
-        if (!audioviz::texture::load("PirateSessions.png", pirateSessions))
+        if (!audioviz::resource_access::load("PirateSessions.png", pirateSessions))
         {
             GLOG("Failed to load pirate sessions");
         }
@@ -48,10 +48,16 @@ struct LaserBeam : audioviz::Screen
                                       << pirateSessions.getSize().y);
         GLOG("BeamGrad loaded " << beamGrad.getSize().x << " " << beamGrad.getSize().y);
 
+        if (!audioviz::resource_access::load("pixel_operator/PixelOperatorMono-Bold.ttf", theFont))
+        {
+            GLOG("Unable to load font ");
+        }
+
         pirateSprite.setTexture(pirateSessions);
     }
 
     float ang{0};
+    sf::Font theFont;
     sf::Sprite pirateSprite;
     sf::Texture beamGrad, pirateSessions;
     sf::VertexArray m_vertices;
@@ -133,7 +139,17 @@ struct LaserBeam : audioviz::Screen
             target.draw(beam, states);
         }
 
+        states.texture = nullptr;
         target.draw(pirateSprite, states);
+
+        sf::Text text;
+
+        text.setFont(theFont);
+        text.setString("Leeward Visualization");
+        text.setCharacterSize(30);
+        text.setFillColor(sf::Color::White);
+        text.setPosition(400 + 50 * std::sin(ang), 0);
+        target.draw(text, states);
     }
 };
 

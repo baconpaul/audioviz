@@ -12,15 +12,16 @@
  * https://github.com/baconpaul/audioviz
  */
 
-#include "TextureSet.h"
+#include "resource_access.h"
 #include "audioviz.h"
 #include "cmrc/cmrc.hpp"
 
 CMRC_DECLARE(audioviz_resources);
 
-namespace audioviz::texture
+namespace audioviz::resource_access
 {
-bool load(const std::string &path, sf::Texture &into)
+template <typename T>
+bool loadImpl(const std::string &path, T &into)
 {
     try
     {
@@ -33,5 +34,15 @@ bool load(const std::string &path, sf::Texture &into)
     }
     GLOG("Resource '" << path << "' failed to load");
     return false;
+}
+
+bool load(const std::string &path, sf::Texture &into)
+{
+    return loadImpl(path, into);
+}
+
+bool load(const std::string &path, sf::Font &into)
+{
+    return loadImpl(path, into);
 }
 } // namespace audioviz::texture

@@ -17,9 +17,10 @@
 
 #include <SFML/Graphics.hpp>
 
-namespace audioviz::texture
+namespace audioviz::resource_access
 {
 bool load(const std::string &path, sf::Texture &into);
+bool load(const std::string &path, sf::Font &into);
 }
 
 #endif // AUDIOVIZ_TEXTURESET_H
