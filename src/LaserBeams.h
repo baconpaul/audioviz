@@ -16,6 +16,9 @@
 #define AUDIOVIZ_SRC_LASERBEAMS_H
 
 #include <SFML/Graphics.hpp>
+#include <cmath>
+#include <cstdint>
+#include <string>
 #include "resource_access.h"
 #include "audioviz.h"
 #include "screen.h"
