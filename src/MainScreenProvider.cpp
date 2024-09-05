@@ -17,6 +17,8 @@
 #include <deque>
 #include <tuple>
 #include <vector>
+#include <functional>
+#include <string>
 
 namespace audioviz
 {
