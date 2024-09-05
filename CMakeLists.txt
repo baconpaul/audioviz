@@ -8,6 +8,9 @@ option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 
 set(CMAKE_CXX_STANDARD 17)
 include(FetchContent)
+
+set(SFML_BUILD_AUDIO FALSE)
+set(SFML_BUILD_NETWORK FALSE)
 FetchContent_Declare(SFML
     GIT_REPOSITORY https://github.com/SFML/SFML.git
     GIT_TAG 2.6.x)
@@ -32,7 +35,7 @@ if (APPLE)
     set(FWD "$<TARGET_PROPERTY:${PROJECT_NAME},RUNTIME_OUTPUT_DIRECTORY>")
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
             COMMAND mkdir -p ${FWD}/${PROJECT_NAME}.app/Contents/Frameworks
-            COMMAND  cp -a ${CMAKE_BINARY_DIR}/_deps/sfml-src/extlibs/libs-osx/Frameworks/* ${FWD}/${PROJECT_NAME}.app/Contents/Frameworks
+            COMMAND  cp -a ${CMAKE_BINARY_DIR}/_deps/sfml-src/extlibs/libs-osx/Frameworks/freetype.framework ${FWD}/${PROJECT_NAME}.app/Contents/Frameworks
             USES_TERMINAL
     )
 endif()

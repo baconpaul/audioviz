@@ -25,7 +25,7 @@ pushd ${BUILD_DIR}
     codesign -vvv audioviz.app
 
   popd
-  hdiutil create /tmp/tmp.dmg -ov -volname "AUDIO_VIZ" -fs HFS+ -srcfolder "product"
+  hdiutil create /tmp/tmp.dmg -ov -volname "AudioViz Nightly" -fs HFS+ -srcfolder "product"
   hdiutil convert /tmp/tmp.dmg -format UDZO -o "audioviz.dmg"
 
   codesign --force -s "$MAC_SIGNING_CERT" --timestamp "audioviz.dmg"
