@@ -51,20 +51,19 @@ jobs:
 
       - name: Build release version
         run: |
-          
-          export MAC_SIGNING_CERT="${{ secrets.MAC_SIGNING_CERT }}"
-          export MAC_INSTALLING_CERT="${{ secrets.MAC_INSTALLING_CERT }}"
-  
-          export MAC_SIGNING_ID="${{ secrets.MAC_SIGNING_ID }}"
-          export MAC_SIGNING_1UPW="${{ secrets.MAC_SIGNING_1UPW }}"
-          export MAC_SIGNING_TEAM="${{ secrets.MAC_SIGNING_TEAM }}"
-  
           cmake -S . -B ./build -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" 
           cmake --build ./build --config Release --target audioviz --parallel 3
 
       - name: Make DMG
         if: runner.os == 'macOS'
         run :
+          export MAC_SIGNING_CERT="${{ secrets.MAC_SIGNING_CERT }}"
+          export MAC_INSTALLING_CERT="${{ secrets.MAC_INSTALLING_CERT }}"
+          
+          export MAC_SIGNING_ID="${{ secrets.MAC_SIGNING_ID }}"
+          export MAC_SIGNING_1UPW="${{ secrets.MAC_SIGNING_1UPW }}"
+          export MAC_SIGNING_TEAM="${{ secrets.MAC_SIGNING_TEAM }}"
+
           BUILD_DIR=./build ./scripts/make_dmg.sh
           ls -l ./build/dmg
 
