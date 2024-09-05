@@ -12,15 +12,13 @@
  * https://github.com/baconpaul/audioviz
  */
 
-#ifndef AUDIOVIZ_SRC_TEXTURESET_H
-#define AUDIOVIZ_SRC_TEXTURESET_H
+#ifndef AUDIOVIZ_SRC_INFRA_GLOG_H
+#define AUDIOVIZ_SRC_INFRA_GLOG_H
 
-#include <SFML/Graphics.hpp>
+#include <iostream>
 
-namespace audioviz::resource_access
-{
-bool load(const std::string &path, sf::Texture &into);
-bool load(const std::string &path, sf::Font &into);
-}
+#define GLOG(...)                                                                                  \
+    std::cout << __FILE__ << ":" << __LINE__ << " [" << __func__ << "] " << __VA_ARGS__            \
+              << std::endl;
 
-#endif // AUDIOVIZ_TEXTURESET_H
+#endif // AUDIOVIZ_AUDIOVIZ_H

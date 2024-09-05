@@ -21,9 +21,11 @@ include("cmake/CmakeRC.cmake")
 add_subdirectory(res)
 
 add_executable(${PROJECT_NAME}
-        src/main.cpp
-        src/resource_access.cpp
+        src/infra/main.cpp
+        src/infra/resource_access.cpp
+        src/MainScreenProvider.cpp
 )
+target_include_directories(${PROJECT_NAME} PRIVATE src)
 target_link_libraries(${PROJECT_NAME} PRIVATE sfml-graphics ${PROJECT_NAME}-resources)
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
 

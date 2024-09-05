@@ -12,21 +12,22 @@
  * https://github.com/baconpaul/audioviz
  */
 
-#ifndef AUDIOVIZ_SRC_LASERBEAMS_H
-#define AUDIOVIZ_SRC_LASERBEAMS_H
+#ifndef AUDIOVIZ_SRC_VISUALIZATIONS_LASERBEAMS_H
+#define AUDIOVIZ_SRC_VISUALIZATIONS_LASERBEAMS_H
 
 #include <SFML/Graphics.hpp>
 #include <cmath>
 #include <cstdint>
 #include <string>
-#include "resource_access.h"
-#include "audioviz.h"
-#include "screen.h"
+
+#include "infra/resource_access.h"
+#include "infra/glog.h"
+#include "infra/screen.h"
 
 namespace audioviz::graphics
 {
 
-struct LaserBeam : audioviz::Screen
+struct LaserBeam : audioviz::infra::Screen
 {
     static constexpr int nPoints{100};
     static constexpr float cx{500}, cy{350};
@@ -38,12 +39,12 @@ struct LaserBeam : audioviz::Screen
             m_angles[i] =
                 sf::Vector2f(4.0 * rand() / RAND_MAX - 2.0, 4.0 * rand() / RAND_MAX - 2.0);
         }
-        if (!audioviz::resource_access::load("BeamGradient.png", beamGrad))
+        if (!audioviz::infra::load("BeamGradient.png", beamGrad))
         {
             GLOG("Failed to load beam gradient");
         }
 
-        if (!audioviz::resource_access::load("PirateSessions.png", pirateSessions))
+        if (!audioviz::infra::load("PirateSessions.png", pirateSessions))
         {
             GLOG("Failed to load pirate sessions");
         }
@@ -51,7 +52,7 @@ struct LaserBeam : audioviz::Screen
                                       << pirateSessions.getSize().y);
         GLOG("BeamGrad loaded " << beamGrad.getSize().x << " " << beamGrad.getSize().y);
 
-        if (!audioviz::resource_access::load("pixel_operator/PixelOperatorMono-Bold.ttf", theFont))
+        if (!audioviz::infra::load("pixel_operator/PixelOperatorMono-Bold.ttf", theFont))
         {
             GLOG("Unable to load font ");
         }
@@ -154,14 +155,12 @@ struct LaserBeam : audioviz::Screen
         auto b = text.getLocalBounds();
         auto cp = (target.getSize().x - b.getSize().x) * 0.5;
 
-
         text.setFillColor(sf::Color::Red);
         text.setPosition(cp + 3 + 50 * std::sin(ang), 3);
         target.draw(text, states);
         text.setFillColor(sf::Color::White);
         text.setPosition(cp + 50 * std::sin(ang), 0);
         target.draw(text, states);
-
     }
 };
 

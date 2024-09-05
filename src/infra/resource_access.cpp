@@ -13,15 +13,14 @@
  */
 
 #include "resource_access.h"
-#include "audioviz.h"
+#include "glog.h"
 #include "cmrc/cmrc.hpp"
 
 CMRC_DECLARE(audioviz_resources);
 
-namespace audioviz::resource_access
+namespace audioviz::infra
 {
-template <typename T>
-bool loadImpl(const std::string &path, T &into)
+template <typename T> bool loadImpl(const std::string &path, T &into)
 {
     try
     {
@@ -36,13 +35,7 @@ bool loadImpl(const std::string &path, T &into)
     return false;
 }
 
-bool load(const std::string &path, sf::Texture &into)
-{
-    return loadImpl(path, into);
-}
+bool load(const std::string &path, sf::Texture &into) { return loadImpl(path, into); }
 
-bool load(const std::string &path, sf::Font &into)
-{
-    return loadImpl(path, into);
-}
-} // namespace audioviz::texture
+bool load(const std::string &path, sf::Font &into) { return loadImpl(path, into); }
+} // namespace audioviz::infra

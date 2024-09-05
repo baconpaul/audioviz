@@ -12,13 +12,18 @@
  * https://github.com/baconpaul/audioviz
  */
 
-#ifndef AUDIOVIZ_SRC_AUDIOVIZ_H
-#define AUDIOVIZ_SRC_AUDIOVIZ_H
+#include "MainScreenProvider.h"
+#include "visualizations/LaserBeams.h"
 
-#include <iostream>
+namespace audioviz
+{
+MainScreenProvider::MainScreenProvider()
+{
+    screens["laserbeams"] = std::make_unique<audioviz::graphics::LaserBeam>();
+}
 
-#define GLOG(...)                                                                                  \
-    std::cout << __FILE__ << ":" << __LINE__ << " [" << __func__ << "] " << __VA_ARGS__            \
-              << std::endl;
-
-#endif // AUDIOVIZ_AUDIOVIZ_H
+const std::unique_ptr<infra::Screen> &MainScreenProvider::currentScreen() const
+{
+    return screens.at("laserbeams");
+}
+} // namespace audioviz

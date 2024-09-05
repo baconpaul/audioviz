@@ -12,12 +12,14 @@
  * https://github.com/baconpaul/audioviz
  */
 
-#ifndef AUDIOVIZ_SRC_SCREEN_H
-#define AUDIOVIZ_SRC_SCREEN_H
+#ifndef AUDIOVIZ_SRC_INFRA_SCREEN_H
+#define AUDIOVIZ_SRC_INFRA_SCREEN_H
 
 #include <SFML/Graphics.hpp>
+#include <memory>
+#include <string>
 
-namespace audioviz
+namespace audioviz::infra
 {
 struct Screen : sf::Drawable
 {
@@ -26,6 +28,12 @@ struct Screen : sf::Drawable
     virtual void mouseDown(int x, int y) {}
     virtual void textEntered(const std::string &c) {}
 };
-} // namespace audioviz
+
+struct ScreenProvider
+{
+    virtual ~ScreenProvider() = default;
+    virtual const std::unique_ptr<Screen> &currentScreen() const = 0;
+};
+} // namespace audioviz::infra
 
 #endif // AUDIOVIZ_SCREEN_H

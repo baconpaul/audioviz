@@ -14,8 +14,8 @@
 #include <SFML/Graphics.hpp>
 #include <cstdint>
 
-#include "audioviz.h"
-#include "LaserBeams.h"
+#include "glog.h"
+#include "MainScreenProvider.h"
 
 void utf32_to_utf8_string(uint32_t code, char *string)
 {
@@ -46,14 +46,15 @@ int main()
     sf::ContextSettings settings;
     settings.antialiasingLevel = 4;
 
-    auto window = sf::RenderWindow{{1024u, 768u}, "Audi Viz", sf::Style::Default, settings};
+    auto window = sf::RenderWindow{{1024u, 768u}, "Audio Viz", sf::Style::Default, settings};
     window.setFramerateLimit(144);
 
     GLOG("Shaders available: " << sf::Shader::isAvailable());
 
-    audioviz::graphics::LaserBeam lb;
+    audioviz::MainScreenProvider ms;
     while (window.isOpen())
     {
+        auto &cs = ms.currentScreen();
         for (auto event = sf::Event{}; window.pollEvent(event);)
         {
             switch (event.type)
@@ -65,12 +66,12 @@ int main()
             {
                 char str[5]{0, 0, 0, 0};
                 utf32_to_utf8_string(event.text.unicode, str);
-                lb.textEntered(str);
+                cs->textEntered(str);
             }
             break;
             case sf::Event::MouseButtonPressed:
             {
-                lb.mouseDown(event.mouseButton.x, event.mouseButton.y);
+                cs->mouseDown(event.mouseButton.x, event.mouseButton.y);
             }
             default:
                 break;
@@ -78,8 +79,8 @@ int main()
         }
 
         window.clear();
-        window.draw(lb);
+        window.draw(*cs);
         window.display();
-        lb.step();
+        cs->step();
     }
 }
