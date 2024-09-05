@@ -66,10 +66,6 @@ jobs:
         if: runner.os == 'macOS'
         run :
           BUILD_DIR=./build ./scripts/make_dmg.sh
-
-      - name: Show Build Directory
-        run: |
-          ls -l ./build
           ls -l ./build/dmg
 
       - name: Upload artifact
