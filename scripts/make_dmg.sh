@@ -10,8 +10,10 @@
 rm -f /tmp/tmp.dmg
 rm -f ${BUILD_DIR}/bin/*.dmg
 
+mkdir -p ${BUILD_DIR}/product
+cp scripts/entitlements.plist ${BUILD_DIR}
+
 pushd ${BUILD_DIR}
-  mkdir product
   pushd bin
     cp -a audioviz.app ../product
   popd
@@ -21,11 +23,16 @@ pushd ${BUILD_DIR}
       pwd
       find . -name "*.framework" -print -exec codesign --force -s "$MAC_SIGNING_CERT" --timestamp -o runtime {} \;
     popd
-    codesign --force -s "$MAC_SIGNING_CERT" -o runtime --timestamp --strict "audioviz.app"
+    codesign --force -s "$MAC_SIGNING_CERT" -o runtime --timestamp --strict --entitlements ../entitlements.plist "audioviz.app"
     codesign -vvv audioviz.app
 
   popd
-  hdiutil create /tmp/tmp.dmg -ov -volname "AudioViz Nightly" -fs HFS+ -srcfolder "product"
+  VB="AudioViz Nightly"
+  DT=`date +"%Y-%m-%d %H:%M"`
+  GH=`git rev-parse --short HEAD`
+
+  echo "Creating volume '${VB} ${DT} ${GH}'"
+  hdiutil create /tmp/tmp.dmg -ov -volname "${VB} ${DT} ${GH}" -fs HFS+ -srcfolder "product"
   hdiutil convert /tmp/tmp.dmg -format UDZO -o "audioviz.dmg"
 
   codesign --force -s "$MAC_SIGNING_CERT" --timestamp "audioviz.dmg"
