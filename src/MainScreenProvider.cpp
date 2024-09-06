@@ -20,6 +20,8 @@
 #include <string>
 #include <sstream>
 
+#include "audio/devices.h"
+
 #include "visualizations/LaserBeams.h"
 #include "visualizations/ShaderTest.h"
 
@@ -34,14 +36,15 @@ struct MenuScreen : infra::Screen
 
     screenStack_t stack;
 
-    sf::Font screenFont;
+    sf::Font pixelFont, textFont;
     MainScreenProvider &mainScreen;
     std::string versionString;
+    std::string defaultDevice;
 
     MenuScreen(MainScreenProvider &ms) : mainScreen(ms)
     {
         auto main = screenAction_t();
-        main.emplace_back('S', "Settings", [this]() { pushSettingsMenu(); });
+        main.emplace_back('Z', "Select Audio Input", [this]() { pushAudioInputMenu(); });
 
         char c = '1';
         for (const auto &[k, s] : ms.screens)
@@ -54,31 +57,44 @@ struct MenuScreen : infra::Screen
         }
         stack.push_back(main);
 
-        if (!audioviz::infra::load("pixel_operator/PixelOperatorMono-Bold.ttf", screenFont))
+        if (!(audioviz::infra::loadPixelFont(pixelFont) && audioviz::infra::loadMonoFont(textFont)))
         {
-            GLOG("Unable to load font ");
+            GLOG("Unable to load fonts");
         }
 
         std::ostringstream vs;
         vs << "Build: " << GIT_HASH << " " << __DATE__ << " " << __TIME__;
         versionString = vs.str();
+
+        defaultDevice = audioviz::audio::defaultInputDevice();
     }
 
-    void pushSettingsMenu()
+    void pushAudioInputMenu()
     {
+        auto dev = audio::inputDevices();
         auto main = screenAction_t();
-        main.emplace_back('1', "Coming", [this]() { GLOG("Coming"); });
-        main.emplace_back('2', "Soon", [this]() { GLOG("Soon"); });
-        main.emplace_back('3', "Back to Main", [this]() { this->stack.pop_back(); });
+        char c = '1';
+        main.emplace_back('U', "Up to main menu", [this]() { doPopBackAsap(); });
+        for (auto &d : dev)
+        {
+            auto idx = c - '1';
+            main.emplace_back(c, d, [this, idx]() {
+                doPopBackAsap();
+                audio::startInput(idx);
+            });
+            c = c + 1;
+        }
         stack.push_back(main);
     }
-    void step() override {}
+    float time{0.f};
+    void step() override { time += 0.01; }
 
+    bool dpb{false};
+    void doPopBackAsap() { dpb = true; }
     void textEntered(const std::string &cp) override
     {
         const auto &tp = stack.back();
-        auto ht{30};
-        auto ps{10};
+        dpb = false;
         for (auto [c, l, f] : tp)
         {
             if (std::tolower(cp[0]) == std::tolower(c))
@@ -86,30 +102,47 @@ struct MenuScreen : infra::Screen
                 f();
             }
         }
+        if (dpb)
+            stack.pop_back();
     }
 
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override
     {
         const auto &tp = stack.back();
         sf::Text txt;
-        auto ht{30};
-
-        txt.setFont(screenFont);
-        txt.setPosition(10, 10);
-        txt.setFillColor(sf::Color(200, 200, 255));
+        auto ht{40};
+        auto ypos{-5};
+        int pad{3};
+        txt.setFont(pixelFont);
+        txt.setPosition(10, ypos);
+        txt.setFillColor(
+            sf::Color(200 + 50 * std::cos(1.2 * time), 200 + 50 * std::sin(time), 255));
         txt.setCharacterSize(ht);
         txt.setString("Leeward Visualization Control Panel");
         target.draw(txt, states);
+        ypos += ht + 5;
+
+        ht = 16;
+
+        txt.setFont(textFont);
+        txt.setCharacterSize(ht);
+        txt.setFillColor(sf::Color::Yellow);
         txt.setString("Select an option below. From a viz, press 'Q' to return to menu");
-        txt.setPosition(10, 10 + ht);
+        txt.setPosition(10, ypos);
+        ypos += ht + pad;
         target.draw(txt, states);
 
-        auto ps{20 + 2 * ht};
+        txt.setPosition(10, ypos);
+        txt.setString("-" + defaultDevice + "-");
+        ypos += ht + pad;
+        target.draw(txt, states);
+
+        auto ps{ypos};
 
         for (auto [c, l, f] : tp)
         {
             sf::Text txt;
-            txt.setFont(screenFont);
+            txt.setFont(textFont);
             txt.setPosition(10, ps);
             txt.setString(c);
             txt.setFillColor(sf::Color(255, 255, 0));
@@ -121,7 +154,7 @@ struct MenuScreen : infra::Screen
             txt.setFillColor(sf::Color::White);
             target.draw(txt, states);
 
-            ps += ht;
+            ps += ht + pad;
         }
 
         auto fpos = target.getSize().y - 10 - ht;

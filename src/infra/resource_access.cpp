@@ -40,6 +40,12 @@ bool load(const std::string &path, sf::Texture &into) { return loadImpl(path, in
 
 bool load(const std::string &path, sf::Font &into) { return loadImpl(path, into); }
 
+bool loadPixelFont(sf::Font &into)
+{
+    return load("pixel_operator/PixelOperatorMono-Bold.ttf", into);
+}
+bool loadMonoFont(sf::Font &into) { return load("AnonymousPro/AnonymousPro-Regular.ttf", into); }
+
 std::string shaderSource(const std::string &path)
 {
     try

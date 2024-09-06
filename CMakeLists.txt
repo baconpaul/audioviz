@@ -25,6 +25,15 @@ FetchContent_Declare(SFML
     GIT_TAG 2.6.x)
 FetchContent_MakeAvailable(SFML)
 
+
+if (APPLE)
+    set(RTAUDIO_API_JACK FALSE CACHE BOOL "Not on pauls mac at least")
+endif()
+FetchContent_Declare(RTAudio
+        GIT_REPOSITORY https://github.com/thestk/rtaudio.git
+        GIT_TAG 6.0.1)
+FetchContent_MakeAvailable(RTAudio)
+
 include("cmake/CmakeRC.cmake")
 
 add_subdirectory(res)
@@ -33,10 +42,11 @@ add_subdirectory(src/shaders)
 add_executable(${PROJECT_NAME}
         src/infra/main.cpp
         src/infra/resource_access.cpp
+        src/audio/devices.cpp
         src/MainScreenProvider.cpp
 )
 target_include_directories(${PROJECT_NAME} PRIVATE src)
-target_link_libraries(${PROJECT_NAME} PRIVATE sfml-graphics ${PROJECT_NAME}-resources ${PROJECT_NAME}-shaders)
+target_link_libraries(${PROJECT_NAME} PRIVATE sfml-graphics ${PROJECT_NAME}-resources ${PROJECT_NAME}-shaders rtaudio)
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
 target_compile_definitions(${PROJECT_NAME} PRIVATE GIT_HASH="${GIT_COMMIT_HASH}")
 
