@@ -39,12 +39,13 @@ struct MenuScreen : infra::Screen
     sf::Font pixelFont, textFont;
     MainScreenProvider &mainScreen;
     std::string versionString;
-    std::string defaultDevice;
 
     MenuScreen(MainScreenProvider &ms) : mainScreen(ms) {}
     void initialize(int w, int h) override
     {
         auto main = screenAction_t();
+        // Toggle depends on this being the first item, below. Gross but hey thats ok
+        main.emplace_back('Y', "Start Audio Input", [this]() { toggleAudioInput(); });
         main.emplace_back('Z', "Select Audio Input", [this]() { pushAudioInputMenu(); });
 
         char c = '1';
@@ -66,22 +67,33 @@ struct MenuScreen : infra::Screen
         std::ostringstream vs;
         vs << "Build: " << GIT_HASH << " " << __DATE__ << " " << __TIME__;
         versionString = vs.str();
-
-        defaultDevice = audioSystem->defaultInputDevice();
     }
 
+    void toggleAudioInput()
+    {
+        if (audioSystem->isRunning())
+        {
+            audioSystem->stop();
+            std::get<1>(stack.front()[0]) = "Start Audio Input";
+        }
+        else
+        {
+            audioSystem->start();
+            std::get<1>(stack.front()[0]) = "Stop Audio Input";
+        }
+    }
     void pushAudioInputMenu()
     {
         auto dev = audioSystem->inputDevices();
         auto main = screenAction_t();
         char c = '1';
         main.emplace_back('U', "Up to main menu", [this]() { doPopBackAsap(); });
-        for (auto &d : dev)
+        for (auto &[didx, nm] : dev)
         {
             auto idx = c - '1';
-            main.emplace_back(c, d, [this, idx]() {
+            main.emplace_back(c, nm, [this, d = didx]() {
                 doPopBackAsap();
-                audioSystem->startInput(idx);
+                audioSystem->selectInput(d);
             });
             c = c + 1;
         }
@@ -137,9 +149,11 @@ struct MenuScreen : infra::Screen
         target.draw(txt, states);
 
         txt.setPosition(10, ypos);
-        txt.setString("-" + defaultDevice + "-");
+        txt.setString("Audio device: " + audioSystem->selectedDevice.second);
         ypos += ht + pad;
         target.draw(txt, states);
+
+        ypos += 8;
 
         auto ps{ypos};
 

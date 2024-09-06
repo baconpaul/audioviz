@@ -18,6 +18,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <tuple>
 
 #include "infra/screen.h"
 #include "audio/audio.h"
