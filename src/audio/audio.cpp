@@ -14,6 +14,7 @@
 
 #include "audio.h"
 
+#include <cmath>
 #include "RtAudio.h"
 
 #include "infra/glog.h"
