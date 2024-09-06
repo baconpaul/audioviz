@@ -51,7 +51,7 @@ int main()
 
     GLOG("Shaders available: " << sf::Shader::isAvailable());
 
-    audioviz::MainScreenProvider ms;
+    audioviz::MainScreenProvider ms(1024, 768);
     while (window.isOpen())
     {
         auto &cs = ms.currentScreen();

@@ -22,6 +22,8 @@ namespace audioviz::infra
 {
 bool load(const std::string &path, sf::Texture &into);
 bool load(const std::string &path, sf::Font &into);
+
+std::string shaderSource(const std::string &path);
 } // namespace audioviz::infra
 
 #endif // AUDIOVIZ_TEXTURESET_H

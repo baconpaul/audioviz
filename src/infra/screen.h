@@ -27,6 +27,8 @@ struct Screen : sf::Drawable
     virtual void step() = 0;
     virtual void mouseDown(int x, int y) {}
     virtual void textEntered(const std::string &c) {}
+    virtual std::string getName() const = 0;
+    virtual void initialize(int w, int h) {}
 };
 
 struct ScreenProvider

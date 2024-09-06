@@ -19,6 +19,7 @@ FetchContent_MakeAvailable(SFML)
 include("cmake/CmakeRC.cmake")
 
 add_subdirectory(res)
+add_subdirectory(src/shaders)
 
 add_executable(${PROJECT_NAME}
         src/infra/main.cpp
@@ -26,7 +27,7 @@ add_executable(${PROJECT_NAME}
         src/MainScreenProvider.cpp
 )
 target_include_directories(${PROJECT_NAME} PRIVATE src)
-target_link_libraries(${PROJECT_NAME} PRIVATE sfml-graphics ${PROJECT_NAME}-resources)
+target_link_libraries(${PROJECT_NAME} PRIVATE sfml-graphics ${PROJECT_NAME}-resources ${PROJECT_NAME}-shaders)
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
 
 if (APPLE)

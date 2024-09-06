@@ -15,7 +15,7 @@
 #ifndef AUDIOVIZ_SRC_MAINSCREENPROVIDER_H
 #define AUDIOVIZ_SRC_MAINSCREENPROVIDER_H
 
-#include <unordered_map>
+#include <map>
 #include <memory>
 #include <string>
 
@@ -23,13 +23,20 @@
 
 namespace audioviz
 {
+
 struct MainScreenProvider : infra::ScreenProvider
 {
-    std::string cs{};
-    std::unordered_map<std::string, std::unique_ptr<infra::Screen>> screens;
-    MainScreenProvider();
+    std::map<std::string, std::unique_ptr<infra::Screen>> screens;
+    std::unique_ptr<infra::Screen> menuScreen;
+    MainScreenProvider(int w, int h);
+    ~MainScreenProvider();
     const std::unique_ptr<infra::Screen> &currentScreen() const override;
     void returnToMainMenu();
+    void setCurrentScreen(const std::string &s);
+
+  private:
+    std::string cs{};
+    int width, height;
 };
 } // namespace audioviz
 

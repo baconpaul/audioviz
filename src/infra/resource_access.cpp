@@ -17,6 +17,7 @@
 #include "cmrc/cmrc.hpp"
 
 CMRC_DECLARE(audioviz_resources);
+CMRC_DECLARE(audioviz_shaders);
 
 namespace audioviz::infra
 {
@@ -38,4 +39,20 @@ template <typename T> bool loadImpl(const std::string &path, T &into)
 bool load(const std::string &path, sf::Texture &into) { return loadImpl(path, into); }
 
 bool load(const std::string &path, sf::Font &into) { return loadImpl(path, into); }
+
+std::string shaderSource(const std::string &path)
+{
+    try
+    {
+        auto fs = cmrc::audioviz_shaders::get_filesystem();
+        auto df = fs.open(path);
+        return std::string(df.begin(), df.size());
+    }
+    catch (std::exception &e)
+    {
+    }
+    GLOG("Resource '" << path << "' failed to load");
+
+    return {};
+}
 } // namespace audioviz::infra

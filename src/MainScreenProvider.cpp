@@ -13,17 +13,20 @@
  */
 
 #include "MainScreenProvider.h"
-#include "visualizations/LaserBeams.h"
 #include <deque>
 #include <tuple>
 #include <vector>
 #include <functional>
 #include <string>
 
+#include "visualizations/LaserBeams.h"
+#include "visualizations/ShaderTest.h"
+
 namespace audioviz
 {
 struct MenuScreen : infra::Screen
 {
+    std::string getName() const override { return "Menu Screen"; }
     using action_t = std::tuple<char, std::string, std::function<void()>>;
     using screenAction_t = std::vector<action_t>;
     using screenStack_t = std::deque<screenAction_t>;
@@ -37,10 +40,16 @@ struct MenuScreen : infra::Screen
     {
         auto main = screenAction_t();
         main.emplace_back('S', "Settings", [this]() { pushSettingsMenu(); });
-        main.emplace_back('1', "Lazer Beams", [this]() {
-            GLOG("Lazer Beams");
-            this->mainScreen.cs = "laserbeams";
-        });
+
+        char c = '1';
+        for (const auto &[k, s] : ms.screens)
+        {
+            main.emplace_back(c, s->getName(),
+                              [this, sc = k]() { this->mainScreen.setCurrentScreen(sc); });
+            c++;
+            if (c > '9')
+                c = 'A';
+        }
         stack.push_back(main);
 
         if (!audioviz::infra::load("pixel_operator/PixelOperatorMono-Bold.ttf", screenFont))
@@ -51,13 +60,10 @@ struct MenuScreen : infra::Screen
 
     void pushSettingsMenu()
     {
-        GLOG("Push Settings Menu");
         auto main = screenAction_t();
         main.emplace_back('1', "Coming", [this]() { GLOG("Coming"); });
         main.emplace_back('2', "Soon", [this]() { GLOG("Soon"); });
-        main.emplace_back('3', "Back to Main", [this]() {
-            this->stack.pop_back();
-        });
+        main.emplace_back('3', "Back to Main", [this]() { this->stack.pop_back(); });
         stack.push_back(main);
     }
     void step() override {}
@@ -114,16 +120,39 @@ struct MenuScreen : infra::Screen
     }
 };
 
-MainScreenProvider::MainScreenProvider()
+MainScreenProvider::MainScreenProvider(int w, int h) : width(w), height(h)
 {
-    screens["mainmenu"] = std::make_unique<MenuScreen>(*this);
     screens["laserbeams"] = std::make_unique<audioviz::graphics::LaserBeam>();
+    screens["shadertest"] = std::make_unique<audioviz::graphics::ShaderTest>();
+
+    // Set this up after the other screens
+    menuScreen = std::make_unique<MenuScreen>(*this);
     cs = "mainmenu";
 }
 
+MainScreenProvider::~MainScreenProvider() = default;
+
 const std::unique_ptr<infra::Screen> &MainScreenProvider::currentScreen() const
 {
-    return screens.at(cs);
+    auto sf = screens.find(cs);
+    if (sf == screens.end() || cs == "mainmenu")
+        return menuScreen;
+    return sf->second;
+}
+
+void MainScreenProvider::setCurrentScreen(const std::string &s)
+{
+    GLOG("setCurrentScreen '" << s << "'");
+    auto sf = screens.find(s);
+    if (sf == screens.end())
+    {
+        GLOG("That's screens.end so make it main menu");
+        cs = "mainmenu";
+        return;
+    }
+
+    cs = s;
+    sf->second->initialize(width, height);
 }
 
 void MainScreenProvider::returnToMainMenu() { cs = "mainmenu"; }
