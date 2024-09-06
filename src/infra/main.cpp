@@ -47,7 +47,7 @@ int main()
     settings.antialiasingLevel = 4;
 
     auto window = sf::RenderWindow{{1024u, 768u}, "Audio Viz", sf::Style::Default, settings};
-    window.setFramerateLimit(144);
+    window.setFramerateLimit(120);
 
     GLOG("Shaders available: " << sf::Shader::isAvailable());
 

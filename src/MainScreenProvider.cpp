@@ -23,6 +23,8 @@
 #include "audio/audio.h"
 
 #include "visualizations/LaserBeams.h"
+#include "visualizations/Blank.h"
+#include "visualizations/KungFu.h"
 #include "visualizations/ShaderTest.h"
 #include "visualizations/ShaderTestTwo.h"
 
@@ -203,6 +205,8 @@ struct MenuScreen : infra::Screen
 MainScreenProvider::MainScreenProvider(int w, int h) : width(w), height(h)
 {
     audioSystem = std::make_shared<audio::AudioSystem>();
+    screens["blank"] = std::make_unique<audioviz::graphics::Blank>();
+    screens["kungfu"] = std::make_unique<audioviz::graphics::KungFu>();
     screens["laserbeams"] = std::make_unique<audioviz::graphics::LaserBeam>();
     screens["shadertest"] = std::make_unique<audioviz::graphics::ShaderTest>();
     screens["shadertesttwo"] = std::make_unique<audioviz::graphics::ShaderTestTwo>();
