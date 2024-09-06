@@ -18,6 +18,8 @@
 #include <vector>
 #include <string>
 #include <utility>
+#include <atomic>
+#include <memory>
 
 class RtAudio;
 
