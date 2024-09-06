@@ -19,6 +19,11 @@
 #include <memory>
 #include <string>
 
+namespace audioviz::audio
+{
+struct AudioSystem;
+}
+
 namespace audioviz::infra
 {
 struct Screen : sf::Drawable
@@ -29,6 +34,8 @@ struct Screen : sf::Drawable
     virtual void textEntered(const std::string &c) {}
     virtual std::string getName() const = 0;
     virtual void initialize(int w, int h) {}
+
+    std::shared_ptr<audio::AudioSystem> audioSystem;
 };
 
 struct ScreenProvider

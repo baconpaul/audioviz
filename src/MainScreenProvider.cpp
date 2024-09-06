@@ -20,7 +20,7 @@
 #include <string>
 #include <sstream>
 
-#include "audio/devices.h"
+#include "audio/audio.h"
 
 #include "visualizations/LaserBeams.h"
 #include "visualizations/ShaderTest.h"
@@ -41,13 +41,14 @@ struct MenuScreen : infra::Screen
     std::string versionString;
     std::string defaultDevice;
 
-    MenuScreen(MainScreenProvider &ms) : mainScreen(ms)
+    MenuScreen(MainScreenProvider &ms) : mainScreen(ms) {}
+    void initialize(int w, int h) override
     {
         auto main = screenAction_t();
         main.emplace_back('Z', "Select Audio Input", [this]() { pushAudioInputMenu(); });
 
         char c = '1';
-        for (const auto &[k, s] : ms.screens)
+        for (const auto &[k, s] : mainScreen.screens)
         {
             main.emplace_back(c, s->getName(),
                               [this, sc = k]() { this->mainScreen.setCurrentScreen(sc); });
@@ -66,12 +67,12 @@ struct MenuScreen : infra::Screen
         vs << "Build: " << GIT_HASH << " " << __DATE__ << " " << __TIME__;
         versionString = vs.str();
 
-        defaultDevice = audioviz::audio::defaultInputDevice();
+        defaultDevice = audioSystem->defaultInputDevice();
     }
 
     void pushAudioInputMenu()
     {
-        auto dev = audio::inputDevices();
+        auto dev = audioSystem->inputDevices();
         auto main = screenAction_t();
         char c = '1';
         main.emplace_back('U', "Up to main menu", [this]() { doPopBackAsap(); });
@@ -80,7 +81,7 @@ struct MenuScreen : infra::Screen
             auto idx = c - '1';
             main.emplace_back(c, d, [this, idx]() {
                 doPopBackAsap();
-                audio::startInput(idx);
+                audioSystem->startInput(idx);
             });
             c = c + 1;
         }
@@ -108,6 +109,9 @@ struct MenuScreen : infra::Screen
 
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override
     {
+        if (stack.empty())
+            return;
+
         const auto &tp = stack.back();
         sf::Text txt;
         auto ht{40};
@@ -169,12 +173,18 @@ struct MenuScreen : infra::Screen
 
 MainScreenProvider::MainScreenProvider(int w, int h) : width(w), height(h)
 {
+    audioSystem = std::make_shared<audio::AudioSystem>();
     screens["laserbeams"] = std::make_unique<audioviz::graphics::LaserBeam>();
     screens["shadertest"] = std::make_unique<audioviz::graphics::ShaderTest>();
 
+    for (auto &[k, s] : screens)
+        s->audioSystem = audioSystem;
+
     // Set this up after the other screens
     menuScreen = std::make_unique<MenuScreen>(*this);
-    cs = "mainmenu";
+    menuScreen->audioSystem = audioSystem;
+    menuScreen->initialize(width, height);
+    setCurrentScreen("mainmenu");
 }
 
 MainScreenProvider::~MainScreenProvider() = default;

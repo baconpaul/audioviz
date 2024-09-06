@@ -20,12 +20,14 @@
 #include <string>
 
 #include "infra/screen.h"
+#include "audio/audio.h"
 
 namespace audioviz
 {
 
 struct MainScreenProvider : infra::ScreenProvider
 {
+    std::shared_ptr<audio::AudioSystem> audioSystem;
     std::map<std::string, std::unique_ptr<infra::Screen>> screens;
     std::unique_ptr<infra::Screen> menuScreen;
     MainScreenProvider(int w, int h);

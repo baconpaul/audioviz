@@ -2,7 +2,7 @@
 // Created by Paul Walker on 9/5/24.
 //
 
-#include "devices.h"
+#include "audio.h"
 
 #include "RtAudio.h"
 
@@ -10,10 +10,13 @@
 
 namespace audioviz::audio
 {
-std::vector<std::string> inputDevices()
+AudioSystem::AudioSystem() { session = std::make_unique<RtAudio>(); }
+AudioSystem::~AudioSystem() = default;
+
+std::vector<std::string> AudioSystem::inputDevices()
 {
     GLOG("Listing input devices");
-    RtAudio audio;
+    auto &audio = *session;
     // Get the list of device IDs
     std::vector<unsigned int> ids = audio.getDeviceIds();
     if (ids.size() == 0)
@@ -36,9 +39,9 @@ std::vector<std::string> inputDevices()
     return res;
 }
 
-std::string defaultInputDevice()
+std::string AudioSystem::defaultInputDevice()
 {
-    RtAudio audio;
+    auto &audio = *session;
     // Get the list of device IDs
     std::vector<unsigned int> ids = audio.getDeviceIds();
     if (ids.size() == 0)
@@ -53,7 +56,7 @@ std::string defaultInputDevice()
     for (unsigned int n = 0; n < ids.size(); n++)
     {
         info = audio.getDeviceInfo(ids[n]);
-       
+
         if (info.isDefaultInput)
         {
             return info.name;
@@ -62,9 +65,9 @@ std::string defaultInputDevice()
     return {};
 }
 
-void startInput(int idx)
+void AudioSystem::startInput(int idx)
 {
-    RtAudio audio;
+    auto &audio = *session;
     // Get the list of device IDs
     std::vector<unsigned int> ids = audio.getDeviceIds();
     RtAudio::DeviceInfo info, theInfo;

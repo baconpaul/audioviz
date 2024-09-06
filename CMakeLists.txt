@@ -42,7 +42,7 @@ add_subdirectory(src/shaders)
 add_executable(${PROJECT_NAME}
         src/infra/main.cpp
         src/infra/resource_access.cpp
-        src/audio/devices.cpp
+        src/audio/audio.cpp
         src/MainScreenProvider.cpp
 )
 target_include_directories(${PROJECT_NAME} PRIVATE src)
