@@ -18,6 +18,7 @@
 #include <vector>
 #include <functional>
 #include <string>
+#include <sstream>
 
 #include "visualizations/LaserBeams.h"
 #include "visualizations/ShaderTest.h"
@@ -35,6 +36,7 @@ struct MenuScreen : infra::Screen
 
     sf::Font screenFont;
     MainScreenProvider &mainScreen;
+    std::string versionString;
 
     MenuScreen(MainScreenProvider &ms) : mainScreen(ms)
     {
@@ -56,6 +58,10 @@ struct MenuScreen : infra::Screen
         {
             GLOG("Unable to load font ");
         }
+
+        std::ostringstream vs;
+        vs << "Build: " << GIT_HASH << " " << __DATE__ << " " << __TIME__;
+        versionString = vs.str();
     }
 
     void pushSettingsMenu()
@@ -117,6 +123,14 @@ struct MenuScreen : infra::Screen
 
             ps += ht;
         }
+
+        auto fpos = target.getSize().y - 10 - ht;
+        txt.setPosition(10, fpos);
+        txt.setFillColor(sf::Color(0, 255, 0));
+
+        txt.setString(versionString);
+        txt.setCharacterSize(ht);
+        target.draw(txt, states);
     }
 };
 
