@@ -32,15 +32,19 @@ struct AudioSystem
     device_t defaultInputDevice();
     void selectInput(int idx);
 
-    bool isRunning() { return running; }
-    void start() { running = true; }
-    void stop() { running = false; }
+    bool isRunning() const;
+    void start();
+    void stop();
+
+    void process(void *inData, int nFrames);
 
     device_t selectedDevice;
 
+    std::atomic<float> level;
+
   private:
-    bool running{false};
     std::unique_ptr<RtAudio> session;
+    int nChannels{0};
 };
 } // namespace audioviz::audio
 #endif // AUDIOVIZ_AUDIO_H

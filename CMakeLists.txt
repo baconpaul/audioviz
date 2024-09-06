@@ -53,6 +53,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE GIT_HASH="${GIT_COMMIT_HASH}"
 if (APPLE)
     set_target_properties(${PROJECT_NAME} PROPERTIES
         MACOSX_BUNDLE TRUE
+        MACOSX_BUNDLE_INFO_PLIST ${CMAKE_SOURCE_DIR}/cmake/Info.plist.in
     )
     target_link_options(${PROJECT_NAME} PUBLIC  "-Wl,-rpath,@executable_path/../Frameworks")
     set(FWD "$<TARGET_PROPERTY:${PROJECT_NAME},RUNTIME_OUTPUT_DIRECTORY>")

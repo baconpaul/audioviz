@@ -182,6 +182,20 @@ struct MenuScreen : infra::Screen
         txt.setString(versionString);
         txt.setCharacterSize(ht);
         target.draw(txt, states);
+
+        int rad{80};
+        sf::CircleShape cs(rad);
+        cs.setFillColor(sf::Color(80, 80, 80));
+        cs.setPosition(target.getSize().x - 2 * rad - 10, 10);
+        target.draw(cs, states);
+
+        auto lv = audioSystem->level.load();
+        auto lrad = rad * std::min(1.f, std::cbrt(lv));
+        sf::CircleShape clev(lrad);
+        auto rdiff = rad - lrad;
+        clev.setFillColor(sf::Color(250, 80, 80));
+        clev.setPosition(target.getSize().x - 2 * rad - 10 + rdiff, 10 + rdiff);
+        target.draw(clev, states);
     }
 };
 
