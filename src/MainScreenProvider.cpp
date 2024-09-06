@@ -24,6 +24,7 @@
 
 #include "visualizations/LaserBeams.h"
 #include "visualizations/ShaderTest.h"
+#include "visualizations/ShaderTestTwo.h"
 
 namespace audioviz
 {
@@ -204,6 +205,7 @@ MainScreenProvider::MainScreenProvider(int w, int h) : width(w), height(h)
     audioSystem = std::make_shared<audio::AudioSystem>();
     screens["laserbeams"] = std::make_unique<audioviz::graphics::LaserBeam>();
     screens["shadertest"] = std::make_unique<audioviz::graphics::ShaderTest>();
+    screens["shadertesttwo"] = std::make_unique<audioviz::graphics::ShaderTestTwo>();
 
     for (auto &[k, s] : screens)
         s->audioSystem = audioSystem;
