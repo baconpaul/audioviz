@@ -54,10 +54,6 @@ struct KungFu : audioviz::infra::Screen
         {
             for (auto &s : kfSprite)
             {
-                int ir = rand() % 7;
-                int jr = rand() % 3;
-                s.setTextureRect({ir * spriteSz, jr * spriteSz, spriteSz, spriteSz - 1});
-
                 int xp = rand() % (width - spriteSz);
                 int yp = rand() % (height - spriteSz);
                 s.setPosition(xp, yp);
@@ -72,9 +68,19 @@ struct KungFu : audioviz::infra::Screen
             }
         }
 
+        if (count % 10 == 0)
+        {
+            for (auto &s : kfSprite)
+            {
+                int ir = rand() % 7;
+                int jr = rand() % 3;
+                s.setTextureRect({ir * spriteSz, jr * spriteSz, spriteSz, spriteSz - 1});
+            }
+        }
+
         for (int i = 0; i < nSprites; ++i)
         {
-            float lv = std::cbrt(audioSystem->level.load() * 5) + 0.01;
+            float lv = std::cbrt(audioSystem->level.load() * 5) + 1;
             auto p = kfSprite[i].getPosition() + velocity[i] * lv;
             kfSprite[i].setPosition(p);
         }
