@@ -32,7 +32,7 @@ struct ShaderTestTwo : audioviz::infra::Screen
     std::string getName() const override { return "Shader Test w Audio and Verts"; }
     ShaderTestTwo() {}
 
-    void initialize(int w, int h) override
+    void initialize() override
     {
         if (!shaderLoaded)
         {

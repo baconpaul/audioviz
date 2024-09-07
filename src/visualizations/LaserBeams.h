@@ -33,7 +33,7 @@ struct LaserBeam : audioviz::infra::Screen
     static constexpr int nPoints{100};
     static constexpr float cx{500}, cy{350};
     LaserBeam() : m_vertices(sf::Points, nPoints) {}
-    void initialize(int w, int h) override
+    void initialize() override
     {
         for (int i = 0; i < nPoints; ++i)
         {

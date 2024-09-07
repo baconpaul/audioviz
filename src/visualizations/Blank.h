@@ -35,7 +35,7 @@ struct Blank : audioviz::infra::Screen
 
     std::chrono::high_resolution_clock::time_point lasttime{};
 
-    void initialize(int w, int h) override
+    void initialize() override
     {
         audioviz::infra::loadPixelFont(theFont);
         counter = 0;

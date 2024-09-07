@@ -26,6 +26,7 @@
 #include "visualizations/Blank.h"
 #include "visualizations/KungFu.h"
 #include "visualizations/ShaderTest.h"
+#include "visualizations/LocalShader.h"
 #include "visualizations/ShaderTestTwo.h"
 
 namespace audioviz
@@ -44,7 +45,7 @@ struct MenuScreen : infra::Screen
     std::string versionString;
 
     MenuScreen(MainScreenProvider &ms) : mainScreen(ms) {}
-    void initialize(int w, int h) override
+    void initialize() override
     {
         auto main = screenAction_t();
         // Toggle depends on this being the first item, below. Gross but hey thats ok
@@ -210,6 +211,7 @@ MainScreenProvider::MainScreenProvider(int w, int h) : width(w), height(h)
     screens["laserbeams"] = std::make_unique<audioviz::graphics::LaserBeam>();
     screens["shadertest"] = std::make_unique<audioviz::graphics::ShaderTest>();
     screens["shadertesttwo"] = std::make_unique<audioviz::graphics::ShaderTestTwo>();
+    screens["localshader"] = std::make_unique<audioviz::graphics::LocalShader>();
 
     for (auto &[k, s] : screens)
         s->audioSystem = audioSystem;
@@ -217,7 +219,9 @@ MainScreenProvider::MainScreenProvider(int w, int h) : width(w), height(h)
     // Set this up after the other screens
     menuScreen = std::make_unique<MenuScreen>(*this);
     menuScreen->audioSystem = audioSystem;
-    menuScreen->initialize(width, height);
+    menuScreen->width = width;
+    menuScreen->height = height;
+    menuScreen->initialize();
     setCurrentScreen("mainmenu");
 }
 
@@ -243,7 +247,9 @@ void MainScreenProvider::setCurrentScreen(const std::string &s)
     }
 
     cs = s;
-    sf->second->initialize(width, height);
+    sf->second->width = width;
+    sf->second->height = height;
+    sf->second->initialize();
 }
 
 void MainScreenProvider::returnToMainMenu() { cs = "mainmenu"; }

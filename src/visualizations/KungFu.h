@@ -38,11 +38,8 @@ struct KungFu : audioviz::infra::Screen
     std::array<sf::Sprite, nSprites> kfSprite;
     std::array<sf::Vector2f, nSprites> velocity;
 
-    int width, height;
-    void initialize(int w, int h) override
+    void initialize() override
     {
-        width = w;
-        height = h;
         audioviz::infra::load("BriansYieArKungFu.png", kungFu);
         for (auto &s : kfSprite)
             s = sf::Sprite(kungFu);

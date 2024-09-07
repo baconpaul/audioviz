@@ -33,9 +33,10 @@ struct Screen : sf::Drawable
     virtual void mouseDown(int x, int y) {}
     virtual void textEntered(const std::string &c) {}
     virtual std::string getName() const = 0;
-    virtual void initialize(int w, int h) {}
+    virtual void initialize() {}
 
     std::shared_ptr<audio::AudioSystem> audioSystem;
+    int width, height;
 };
 
 struct ScreenProvider

@@ -32,7 +32,7 @@ struct ShaderTest : audioviz::infra::Screen
     std::string getName() const override { return "Shader Test"; }
     ShaderTest() {}
 
-    void initialize(int w, int h) override
+    void initialize() override
     {
         if (!shaderLoaded)
         {
@@ -40,9 +40,9 @@ struct ShaderTest : audioviz::infra::Screen
             shader.loadFromMemory(s, sf::Shader::Fragment);
         }
         shaderLoaded = true;
-        shader.setUniform("u_resolution", sf::Vector2f{(float)w, (float)h});
+        shader.setUniform("u_resolution", sf::Vector2f{(float)width, (float)height});
         shader.setUniform("u_time", time);
-        texture.create(w, h);
+        texture.create(width, height);
     }
 
     bool shaderLoaded{false};
