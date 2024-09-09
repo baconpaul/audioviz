@@ -51,6 +51,7 @@ struct MenuScreen : infra::Screen
         // Toggle depends on this being the first item, below. Gross but hey thats ok
         main.emplace_back('Y', "Start Audio Input", [this]() { toggleAudioInput(); });
         main.emplace_back('Z', "Select Audio Input", [this]() { pushAudioInputMenu(); });
+        main.emplace_back('L', "Shader Library", [this]() { pickShaderLibrary(); });
 
         char c = '1';
         for (const auto &[k, s] : mainScreen.screens)
@@ -105,6 +106,22 @@ struct MenuScreen : infra::Screen
     }
     float time{0.f};
     void step() override { time += 0.01; }
+
+    void pickShaderLibrary()
+    {
+        auto main = screenAction_t();
+        main.emplace_back('U', "Up to main menu", [this]() { doPopBackAsap(); });
+        char c = '1';
+
+        for (auto s : audioviz::infra::allShaders())
+        {
+            main.emplace_back(c, s, [this, d = s]() { mainScreen.showShader(d); });
+            c = c + 1;
+            if (c > '9')
+                c = 'A';
+        }
+        stack.push_back(main);
+    }
 
     bool dpb{false};
     void doPopBackAsap() { dpb = true; }
@@ -210,7 +227,6 @@ MainScreenProvider::MainScreenProvider(int w, int h) : width(w), height(h)
     screens["kungfu"] = std::make_unique<audioviz::graphics::KungFu>();
     screens["laserbeams"] = std::make_unique<audioviz::graphics::LaserBeam>();
     screens["shadertest"] = std::make_unique<audioviz::graphics::ShaderTest>();
-    screens["shadertesttwo"] = std::make_unique<audioviz::graphics::ShaderTestTwo>();
     screens["localshader"] = std::make_unique<audioviz::graphics::LocalShader>();
 
     for (auto &[k, s] : screens)
@@ -230,6 +246,9 @@ MainScreenProvider::~MainScreenProvider() = default;
 const std::unique_ptr<infra::Screen> &MainScreenProvider::currentScreen() const
 {
     auto sf = screens.find(cs);
+    if (cs == "shaderlib" && shaderLibraryScreen)
+        return shaderLibraryScreen;
+
     if (sf == screens.end() || cs == "mainmenu")
         return menuScreen;
     return sf->second;
@@ -250,6 +269,17 @@ void MainScreenProvider::setCurrentScreen(const std::string &s)
     sf->second->width = width;
     sf->second->height = height;
     sf->second->initialize();
+}
+
+void MainScreenProvider::showShader(const std::string &path)
+{
+    GLOG("Showing shader " << path);
+    cs = "shaderlib";
+    shaderLibraryScreen = std::make_unique<audioviz::graphics::ShaderTest>(path);
+
+    shaderLibraryScreen->width = width;
+    shaderLibraryScreen->height = height;
+    shaderLibraryScreen->initialize();
 }
 
 void MainScreenProvider::returnToMainMenu() { cs = "mainmenu"; }

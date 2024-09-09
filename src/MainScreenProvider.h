@@ -19,6 +19,7 @@
 #include <memory>
 #include <string>
 #include <tuple>
+#include <vector>
 
 #include "infra/screen.h"
 #include "audio/audio.h"
@@ -31,11 +32,13 @@ struct MainScreenProvider : infra::ScreenProvider
     std::shared_ptr<audio::AudioSystem> audioSystem;
     std::map<std::string, std::unique_ptr<infra::Screen>> screens;
     std::unique_ptr<infra::Screen> menuScreen;
+    std::unique_ptr<infra::Screen> shaderLibraryScreen;
     MainScreenProvider(int w, int h);
     ~MainScreenProvider();
     const std::unique_ptr<infra::Screen> &currentScreen() const override;
     void returnToMainMenu();
     void setCurrentScreen(const std::string &s);
+    void showShader(const std::string &path);
 
   private:
     std::string cs{};

@@ -61,4 +61,24 @@ std::string shaderSource(const std::string &path)
 
     return {};
 }
+
+std::vector<std::string> allShaders()
+{
+    try
+    {
+        std::vector<std::string> res;
+        auto fs = cmrc::audioviz_shaders::get_filesystem();
+        for (auto ent : fs.iterate_directory(""))
+        {
+            GLOG(ent.filename());
+            res.push_back(ent.filename());
+        }
+        return res;
+    }
+    catch (std::exception &e)
+    {
+    }
+
+    return {};
+}
 } // namespace audioviz::infra

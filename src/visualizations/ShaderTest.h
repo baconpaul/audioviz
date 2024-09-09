@@ -30,13 +30,14 @@ namespace audioviz::graphics
 struct ShaderTest : audioviz::infra::Screen
 {
     std::string getName() const override { return "Shader Test"; }
-    ShaderTest() {}
+    std::string shaderName{};
+    ShaderTest(const std::string &shaderN = "most_basic.frag") : shaderName(shaderN) {}
 
     void initialize() override
     {
         if (!shaderLoaded)
         {
-            auto s = audioviz::infra::shaderSource("valuenoise.frag");
+            auto s = audioviz::infra::shaderSource(shaderName);
             shader.loadFromMemory(s, sf::Shader::Fragment);
         }
         shaderLoaded = true;

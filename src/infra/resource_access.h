@@ -26,6 +26,7 @@ bool loadPixelFont(sf::Font &into);
 bool loadMonoFont(sf::Font &into);
 
 std::string shaderSource(const std::string &path);
+std::vector<std::string> allShaders();
 } // namespace audioviz::infra
 
 #endif // AUDIOVIZ_TEXTURESET_H
