@@ -16,7 +16,7 @@ vec3 tex(in vec2 p, in vec2 pact)
   float cx = p.x - 0.5;
   float cy = fract(p.y - 5. * u_time) - 0.5;
   float r = sqrt(cx * cx + cy * cy);
-  return max((1.0 - 3. * r), 0.) * vec3(0., 0.3 + pact.y * 0.7, 0.);
+  return max((1.0 - 3. * r), 0.) * vec3(0.4 + 0.3 * sin(u_time * 0.7), 0.3 + pact.y * 0.7, 0.5 + 0.5 * cos(u_time * 0.4));
 }
 
 void main()
@@ -32,9 +32,9 @@ void main()
   op.x += 0.5;
 
   vec3 col = vec3(0.0);
-  if (op.y < 0.5) {
+  if (op.y < 0.333) {
     vec2 np = op;
-    np.y *= 2.0;
+    np.y *= 3.0;
     np.y = 1.0 - np.y;
 
 
@@ -46,6 +46,6 @@ void main()
     col = tex(fract(np.xy * 20.), np.xy) ;
   }
 
-  col = col + (smoothstep(0.50, 0.51, op.y) - smoothstep(0.50, 0.55, op.y)) * vec3(0.1, 0.2, 0.4);
+  col = col + (smoothstep(0.333, 0.334, op.y) - smoothstep(0.334, 0.45, op.y)) * vec3(0.1, 0.2, 0.4);
   gl_FragColor = vec4(col, 1.0);
 }
