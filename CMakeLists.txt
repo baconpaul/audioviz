@@ -26,6 +26,41 @@ FetchContent_Declare(SFML
 FetchContent_MakeAvailable(SFML)
 
 
+FetchContent_Declare(
+        simde
+        GIT_REPOSITORY https://github.com/simd-everywhere/simde
+        GIT_TAG v0.8.2
+)
+
+FetchContent_MakeAvailable(simde)
+add_library(simde INTERFACE)
+target_include_directories(simde INTERFACE ${simde_SOURCE_DIR})
+
+
+FetchContent_Declare(
+        sstcpp
+        GIT_REPOSITORY https://github.com/surge-synthesizer/sst-cpputils
+        GIT_TAG main
+)
+
+FetchContent_MakeAvailable(sstcpp)
+
+FetchContent_Declare(
+        sstbb
+        GIT_REPOSITORY https://github.com/surge-synthesizer/sst-basic-blocks
+        GIT_TAG main
+)
+
+FetchContent_MakeAvailable(sstbb)
+
+FetchContent_Declare(
+        sstbb
+        GIT_REPOSITORY https://github.com/surge-synthesizer/sst-basic-blocks
+        GIT_TAG main
+)
+
+FetchContent_MakeAvailable(sstbb)
+
 if (APPLE)
     set(RTAUDIO_API_JACK FALSE CACHE BOOL "Not on pauls mac at least")
 endif()
@@ -46,7 +81,7 @@ add_executable(${PROJECT_NAME}
         src/MainScreenProvider.cpp
 )
 target_include_directories(${PROJECT_NAME} PRIVATE src)
-target_link_libraries(${PROJECT_NAME} PRIVATE sfml-graphics ${PROJECT_NAME}-resources ${PROJECT_NAME}-shaders rtaudio)
+target_link_libraries(${PROJECT_NAME} PRIVATE sfml-graphics ${PROJECT_NAME}-resources ${PROJECT_NAME}-shaders rtaudio simde sst-basic-blocks)
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
 target_compile_definitions(${PROJECT_NAME} PRIVATE GIT_HASH="${GIT_COMMIT_HASH}")
 

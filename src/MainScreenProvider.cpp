@@ -217,6 +217,33 @@ struct MenuScreen : infra::Screen
         clev.setFillColor(sf::Color(250, 80, 80));
         clev.setPosition(target.getSize().x - 2 * rad - 10 + rdiff, 10 + rdiff);
         target.draw(clev, states);
+
+        for (int i=0;i<audio::AudioSystem::nBands; ++i)
+        {
+            auto bl = audioSystem->bands[i].load();
+
+            auto y0 = 500;
+            auto yp = y0 - bl * 500;
+            auto rad = 7;
+            auto gap = 20;
+            sf::RectangleShape rec(sf::Vector2f(rad, bl*500));
+            rec.setFillColor(sf::Color(80, 80, 80));
+            rec.setPosition(gap * i + rad / 2, yp + rad / 2);
+            target.draw(rec, states);
+
+
+            sf::CircleShape cblev(rad);
+            cblev.setFillColor(sf::Color(80, 80, 80));
+            cblev.setPosition(  i * gap, y0);
+            target.draw(cblev, states);
+
+            sf::CircleShape clev(rad);
+            clev.setFillColor(sf::Color(std::min(80 + bl*500, 255.f), 80, 80));
+            clev.setPosition(  i * gap, yp);
+            target.draw(clev, states);
+
+
+        }
     }
 };
 

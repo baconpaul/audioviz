@@ -25,6 +25,8 @@ class RtAudio;
 
 namespace audioviz::audio
 {
+struct CytomicSVF;
+
 struct AudioSystem
 {
     AudioSystem();
@@ -44,8 +46,12 @@ struct AudioSystem
 
     std::atomic<float> level;
 
+    static constexpr int nFilters{5}, bandsPerFilter{4}, nBands{nFilters * bandsPerFilter};
+    std::array<std::atomic<float>, nBands> bands;
+
   private:
     std::unique_ptr<RtAudio> session;
+    std::array<std::unique_ptr<CytomicSVF>, nFilters> filter, filter2;
     int nChannels{0};
 };
 } // namespace audioviz::audio
